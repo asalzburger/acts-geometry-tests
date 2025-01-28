@@ -34,7 +34,7 @@ jobs:
         run: echo "DEPENDENCY_URL=https://acts.web.cern.ch/ACTS/ci/ubuntu-24.04/deps.${DEPENDENCY_TAG}.tar.zst" >> $GITHUB_ENV
 
       - name: Install dependencies
-        run: CI/dependencies.sh
+        run: acts/CI/dependencies.sh
 
       - name: Restore ccache
         uses: actions/cache/restore@v4

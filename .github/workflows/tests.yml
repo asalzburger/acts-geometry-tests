@@ -147,12 +147,13 @@ jobs:
       - name: Setup ACTS run environment
         run: >
           cd installed/bin &&
-          source this_acts.sh &&
-          cd .. && source python/setup.sh &&
-          cd ${{ github.workspace }}/acts-validation && source setup.sh &&
-          mkdir ${{ github.workspace }}/run && cd ${{ github.workspace }}/run &&
-          ln -s  ${{ github.workspace }}/acts-validation/scripts/*.py . &&
-          ln -s ${{ github.workspace }}/data .
+          source this_acts.sh
+        # &&
+        # cd .. && source python/setup.sh &&
+        # cd ${{ github.workspace }}/acts-validation && source setup.sh &&
+        # mkdir ${{ github.workspace }}/run && cd ${{ github.workspace }}/run &&
+        # ln -s  ${{ github.workspace }}/acts-validation/scripts/*.py . &&
+        # ln -s ${{ github.workspace }}/data .
 
       - name: Run ACTS GeoModel building and SVG plotting
         run: >

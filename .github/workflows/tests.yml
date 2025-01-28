@@ -157,6 +157,7 @@ jobs:
 
       - name: Run Geant4 material recording
         run: >
+            export G4ENSDFSTATEDATA=../data
             source install/bin/this_acts.sh &&
             source install/python/setup.sh &&
             cd acts-validation && source setup.sh && cd .. &&

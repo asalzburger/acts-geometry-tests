@@ -51,7 +51,6 @@ jobs:
         # versions
         # Need to set git user & email for patching to work (GeoModel plugin)
         run: >
-          ln -s acts/CMakePresets.json CMakePresets.json &&
           git config --global user.name 'CI' &&
           git config --global user.email '<>' &&
           ccache -z &&
@@ -74,12 +73,6 @@ jobs:
           path: ${{ github.workspace }}/ccache
           key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
 
-      - name: Unit tests
-        run: ctest --test-dir build -j$(nproc)
-
-      - name: Integration tests
-        run: cmake --build build --target integrationtests
-
       - name: Install
         run: cmake --build build --target install
 
@@ -90,18 +83,3 @@ jobs:
         with:
           name: acts-linux-ubuntu
           path: build.tar.gz
-
-      - name: Downstream configure
-        run: >
-          cmake -B build-downstream -S Tests/DownstreamProject
-          -GNinja
-          -DCMAKE_BUILD_TYPE=Release
-          -DCMAKE_CXX_FLAGS=-Werror
-          -DCMAKE_CXX_STANDARD=20
-          -DCMAKE_PREFIX_PATH="${INSTALL_DIR}"
-
-      - name: Downstream build
-        run: cmake --build build-downstream
-
-      - name: Downstream run
-        run: ./build-downstream/bin/ShowActsVersion

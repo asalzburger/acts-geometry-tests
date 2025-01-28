@@ -144,22 +144,24 @@ jobs:
         run: >
           python3 -m pip install -r acts-validation/requirements.txt
 
-      - name: Setup ACTS run environment
+      - name: Create ACTS runtime environment
         run: >
-          source installed/bin/this_acts.sh &&
-          source installed/python/setup.sh &&
-          cd acts-validation && source setup.sh && cd .. &&
-          mkdir run
-        shell: bash
+          head -n1 acts/CI/dependencies.sh > setup_all.sh &&
+          echo "source installed/bin/this_acts.sh" >> setup_all.sh &&
+          echo "source installed/python/setup.sh" >> setup_all.sh &&
+          echo "cd acts-validation && source setup.sh && cd .." >> setup_all.sh
 
-      - name: Run ACTS GeoModel building and SVG plotting
+      - name: Run GeoModel building and SVG plotting
         run: >
-            cd run &&
-            python ../acts-validation/scripts/geometry_plot_svg.py --geo-mode=gen2  -i ../data/ITk_SQLite_acts.db -q ITk --top-node ITk --eta-main-lines 0 1 2 3 4 --eta-r-max 1200 --eta-z-max 3600 &&
-            cd ..
+          ./setup_all.sh &&
+          mkdir run &&
+          cd run &&
+          python ../acts-validation/scripts/geometry_plot_svg.py --geo-mode=gen2  -i ../data/ITk_SQLite_acts.db -q ITk --top-node ITk --eta-main-lines 0 1 2 3 4 --eta-r-max 1200 --eta-z-max 3600 &&
+          cd ..
 
       - name: Run Geant4 material recording
         run: >
             cd run &&
             python ../acts-validation/scripts/material_recording.py -t1000 -n1000 -i ../data/ITk_SQLite_acts.db &&
             cd ..
+        shell: bash

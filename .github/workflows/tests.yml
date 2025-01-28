@@ -1,0 +1,84 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CCACHE_DIR: ${{ github.workspace }}/ccache
+  CCACHE_MAXSIZE: 500M
+  CCACHE_KEY_SUFFIX: r2
+  DEPENDENCY_TAG: v5
+
+jobs:
+  linux_ubuntu:
+    runs-on: ubuntu-latest
+    container: ghcr.io/acts-project/ubuntu2404:63
+    env:
+      INSTALL_DIR: ${{ github.workspace }}/install
+      ACTS_LOG_FAILURE_THRESHOLD: WARNING
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: true
+
+      - name: Set dependencies URL
+        run: echo "DEPENDENCY_URL=https://acts.web.cern.ch/ACTS/ci/ubuntu-24.04/deps.${DEPENDENCY_TAG}.tar.zst" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: acts/CI/dependencies.sh
+
+      - name: Restore ccache
+        uses: actions/cache/restore@v4
+        id: ccache-restore
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-${{ runner.os  }}-${{ github.job }}-${{ env.CCACHE_KEY_SUFFIX }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ runner.os  }}-${{ github.job }}-${{ env.CCACHE_KEY_SUFFIX }}-
+
+      - name: Configure
+        # setting CMAKE_CXX_STANDARD=20 is a workaround for a bug in the
+        # dd4hep CMake configuration that gets triggered on recent CMake
+        # versions
+        # Need to set git user & email for patching to work (GeoModel plugin)
+        run: >
+          git config --global user.name 'CI' &&
+          git config --global user.email '<>' &&
+          ccache -z &&
+          cd acts && git submodule update --init && cd .. &&
+          cmake -B build -S .
+          --preset=github-ci
+          -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}"
+          -DPython_EXECUTABLE=$(which python3)
+
+      - name: Build
+        run: cmake --build build
+
+      - name: ccache stats
+        run: ccache -s
+
+      - name: Save ccache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ${{ github.workspace }}/ccache
+          key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
+
+      - name: Install
+        run: cmake --build build --target install
+
+      - name: Package build
+        run: tar czf build.tar.gz -C build --exclude "*.o" --exclude "bin/ActsUnitTest*" --exclude "bin/ActsIntegrationTest*" .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: acts-linux-ubuntu
+          path: build.tar.gz

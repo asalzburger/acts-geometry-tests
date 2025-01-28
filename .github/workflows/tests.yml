@@ -156,16 +156,16 @@ jobs:
       - name: Run GeoModel building and SVG plotting
         run: >
           ./setup_all.sh &&
-          echo $PYTHONPATH &&
+          echo "AAAAAA - PythonPath is = ${PYTHONPATH}" &&
           mkdir run &&
           cd run &&
-          python ../acts-validation/scripts/geometry_plot_svg.py --geo-mode=gen2  -i ../data/ITk_SQLite_acts.db -q ITk --top-node ITk --eta-main-lines 0 1 2 3 4 --eta-r-max 1200 --eta-z-max 3600 &&
+          python3 ../acts-validation/scripts/geometry_plot_svg.py --geo-mode=gen2  -i ../data/ITk_SQLite_acts.db -q ITk --top-node ITk --eta-main-lines 0 1 2 3 4 --eta-r-max 1200 --eta-z-max 3600 &&
           cd ..
         shell: bash
 
       - name: Run Geant4 material recording
         run: >
             cd run &&
-            python ../acts-validation/scripts/material_recording.py -t1000 -n1000 -i ../data/ITk_SQLite_acts.db &&
+            python3 ../acts-validation/scripts/material_recording.py -t1000 -n1000 -i ../data/ITk_SQLite_acts.db &&
             cd ..
         shell: bash

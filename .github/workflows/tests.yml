@@ -51,6 +51,7 @@ jobs:
         # versions
         # Need to set git user & email for patching to work (GeoModel plugin)
         run: >
+          ln -s acts/CMakePresets.json CMakePresets.json &&
           git config --global user.name 'CI' &&
           git config --global user.email '<>' &&
           ccache -z &&

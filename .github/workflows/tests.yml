@@ -149,7 +149,8 @@ jobs:
           head -n1 acts/CI/dependencies.sh > setup_all.sh &&
           echo "source installed/bin/this_acts.sh" >> setup_all.sh &&
           echo "source installed/python/setup.sh" >> setup_all.sh &&
-          echo "cd acts-validation && source setup.sh && cd .." >> setup_all.sh
+          echo "cd acts-validation && source setup.sh && cd .." >> setup_all.sh &&
+          chmod a+x setup_all.sh
 
       - name: Run GeoModel building and SVG plotting
         run: >

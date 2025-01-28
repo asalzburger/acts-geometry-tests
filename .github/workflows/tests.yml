@@ -51,9 +51,9 @@ jobs:
         # versions
         # Need to set git user & email for patching to work (GeoModel plugin)
         run: >
-          git submodule update --init --recursive &&
           git config --global user.name 'CI' &&
           git config --global user.email '<>' &&
+          git submodule update --init --recursive &&
           ccache -z &&
           cmake -B build -S .
           --preset=github-ci

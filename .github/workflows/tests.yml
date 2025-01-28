@@ -75,10 +75,10 @@ jobs:
       - name: Install
         run: cmake --build build --target install
 
-      - name: Package build
-        run: tar czf build.tar.gz -C build --exclude "*.o" --exclude "bin/ActsUnitTest*" --exclude "bin/ActsIntegrationTest*" .
+      - name: Package install
+        run: tar czf install.tar.gz -C ${INSTALL_DIR} .
 
       - uses: actions/upload-artifact@v4
         with:
           name: acts-linux-ubuntu
-          path: build.tar.gz
+          path: install.tar.gz

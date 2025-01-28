@@ -112,3 +112,36 @@ jobs:
       - name: Run ACTS hello world
         run: >
           installed/bin/ActsExampleHelloWorld
+
+  linux_geomodel_tests:
+    runs-on: ubuntu-latest
+    container: ghcr.io/acts-project/ubuntu2404:63
+    needs: [linux_ubuntu]
+    env:
+      ACTS_SEQUENCER_DISABLE_FPEMON: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: true
+
+      - name: Set dependencies URL
+        run: echo "DEPENDENCY_URL=https://acts.web.cern.ch/ACTS/ci/ubuntu-24.04/deps.${DEPENDENCY_TAG}.tar.zst" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: acts/CI/dependencies.sh
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: acts-linux-ubuntu
+
+      - name: Unpack install tarball
+        run: mkdir installed && tar xf install.tar.gz -C installed
+
+      - name: Setup ACTS run environment
+        run: >
+          cd installed/bin &&
+          source this_acts.sh &&
+          cd .. &&
+          source python/setup.sh

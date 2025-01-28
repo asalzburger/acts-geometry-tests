@@ -109,6 +109,6 @@ jobs:
       - name: Unpack install tarball
         run: mkdir installed && tar xf install.tar.gz -C installed
 
-      - name: Run hello world
+      - name: Run ACTS hello world
         run: >
           installed/bin/ActsExampleHelloWorld

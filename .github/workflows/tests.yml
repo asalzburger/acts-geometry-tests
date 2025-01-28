@@ -55,7 +55,7 @@ jobs:
           git config --global user.name 'CI' &&
           git config --global user.email '<>' &&
           ccache -z &&
-          cd acts && git sumodule update --init && cd .. &&
+          cd acts && git submodule update --init && cd .. &&
           cmake -B build -S .
           --preset=github-ci
           -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}"

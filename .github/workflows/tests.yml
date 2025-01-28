@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
   CCACHE_DIR: ${{ github.workspace }}/ccache
   CCACHE_MAXSIZE: 500M
   CCACHE_KEY_SUFFIX: r2
@@ -139,9 +140,23 @@ jobs:
       - name: Unpack install tarball
         run: mkdir installed && tar xf install.tar.gz -C installed
 
+      - name: Install python dependencies
+        run: >
+          python3 -m pip install -r acts-validation/requirements.txt
+
       - name: Setup ACTS run environment
         run: >
           cd installed/bin &&
           source this_acts.sh &&
-          cd .. &&
-          source python/setup.sh
+          cd .. && source python/setup.sh &&
+          cd ${{ github.workspace }}/acts-validation && source setup.sh &&
+          mkdir ${{ github.workspace }}/run && cd ${{ github.workspace }}/run &&
+          ln -s  ${{ github.workspace }}/acts-validation/scripts/*.py . &&
+          ln -s ${{ github.workspace }}/data .
+
+      - name: Run ACTS GeoModel building and SVG plotting
+        run: >
+            cd ${{ github.workspace }}/run &&
+            python geometry_plot_svg.py --geo-mode=gen2  -i data/ITk_SQLite_acts.db -q ITk --top-node ITk
+
+

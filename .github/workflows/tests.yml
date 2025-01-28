@@ -146,7 +146,7 @@ jobs:
 
       - name: Setup ACTS run environment
         run: >
-          source installed/this_acts.sh &&
+          source installed/bin/this_acts.sh &&
           source installed/python/setup.sh &&
           cd acts-validation && source setup.sh && cd .. &&
           mkdir run &&

@@ -150,11 +150,13 @@ jobs:
           echo "source install/bin/this_acts.sh" >> setup_all.sh &&
           echo "source install/python/setup.sh" >> setup_all.sh &&
           echo "cd acts-validation && source setup.sh && cd .." >> setup_all.sh &&
+          echo "export PYTHONPATH=$PYTHONPATH:$(pwd)/install/python:$PYTHONPATH " >> setup_all.sh &&
           chmod a+x setup_all.sh
 
       - name: Run GeoModel building and SVG plotting
         run: >
           ./setup_all.sh &&
+          echo $PYTHONPATH &&
           mkdir run &&
           cd run &&
           python ../acts-validation/scripts/geometry_plot_svg.py --geo-mode=gen2  -i ../data/ITk_SQLite_acts.db -q ITk --top-node ITk --eta-main-lines 0 1 2 3 4 --eta-r-max 1200 --eta-z-max 3600 &&

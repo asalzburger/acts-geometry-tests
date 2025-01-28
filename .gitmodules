@@ -1,3 +1,6 @@
 [submodule "acts"]
 	path = acts
 	url = git@github.com:acts-project/acts.git
+[submodule "acts-validation"]
+	path = acts-validation
+	url = git@github.com:asalzburger/acts-validation.git
